@@ -5,6 +5,9 @@ import cors from 'cors';
 import userRoutes from './src/routes/userRoutes.js';
 import roleRoutes from './src/routes/roleRoutes.js';
 import productRoutes from './src/routes/productRoutes.js';
+import supplierRoutes from './src/routes/supplierRoutes.js';
+import categoryRoutes from './src/routes/categoryRoutes.js';
+import productCategoryRoutes from './src/routes/productCategoryRoutes.js';
 
 const app = express();
 const port = 3000;
@@ -17,6 +20,10 @@ app.use(cors());
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/product', productRoutes)
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/product-categories', productCategoryRoutes);
+
 
 // Iniciar el servidor y conectar a la base de datos
 sequelize.sync()

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-const Product = sequelize.define('Product', {
+const Product = sequelize.define('product', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -36,9 +36,10 @@ const Product = sequelize.define('Product', {
     allowNull: false,
   },
 }, {
+  tableName:'product',
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: 'updated_at',
+  updatedAt: false
 });
 
 export default Product;
