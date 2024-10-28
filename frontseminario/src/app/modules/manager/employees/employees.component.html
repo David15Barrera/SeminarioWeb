@@ -1,1 +1,43 @@
-<p>employees works!</p>
+<div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lista de Empleados</h2>
+  
+    <table class="min-w-full border-collapse border border-gray-200">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border border-gray-200 px-4 py-2 text-left">Nombre</th>
+          <th class="border border-gray-200 px-4 py-2 text-left">Email</th>
+          <th class="border border-gray-200 px-4 py-2 text-left">Rol</th>
+          <th class="border border-gray-200 px-4 py-2 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of employees" class="border-b">
+          <td class="border border-gray-200 px-4 py-2">{{ employee.name }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ employee.email }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ employee.role }}</td>
+          <td class="border border-gray-200 px-4 py-2">
+            <button (click)="openEditModal(employee)" class="text-blue-500 hover:underline">Editar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Modal -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" *ngIf="isModalOpen">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg p-6 w-96">
+          <h3 class="text-lg font-semibold mb-4">Editar Rol de {{ selectedEmployee?.name }}</h3>
+          <select [(ngModel)]="selectedRole" class="border border-gray-300 rounded-lg w-full mb-4">
+            <option value="ADMIN">Admin</option>
+            <option value="AYUDANTE">Ayudante</option>
+            <option value="EMPLEADO">Empleado</option>
+          </select>
+          <div class="flex justify-end">
+            <button (click)="updateRole()" class="bg-blue-500 text-white py-2 px-4 rounded-lg mr-2">Actualizar</button>
+            <button (click)="closeEditModal()" class="bg-red-500 text-white py-2 px-4 rounded-lg">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

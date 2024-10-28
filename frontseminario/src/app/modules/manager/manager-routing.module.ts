@@ -7,7 +7,8 @@ import { EmployeesComponent } from './employees/employees.component';
 import { ProductosComponent } from './productos/productos.component';
 import { ReportesComponent } from './reportes/reportes.component';
 import { SettingsComponent } from './settings/settings.component';
-
+import { SupplearComponent } from './supplear/supplear.component';
+import path from 'path';
 
 const routes: Routes = [
   {
@@ -27,7 +28,10 @@ const routes: Routes = [
   },
   {
     path:'configuracion', component: SettingsComponent
-}
+  },
+  {
+    path:'proveedores', component: SupplearComponent
+  }
 
 ];
 
