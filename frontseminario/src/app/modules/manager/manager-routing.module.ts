@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { ChatComponent } from './chat/chat.component';
@@ -8,6 +8,7 @@ import { ProductosComponent } from './productos/productos.component';
 import { ReportesComponent } from './reportes/reportes.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SupplearComponent } from './supplear/supplear.component';
+import { CreatProdComponent } from './creat-prod/creat-prod.component';
 import path from 'path';
 
 const routes: Routes = [
@@ -16,6 +17,8 @@ const routes: Routes = [
   },
   {
     path: 'edit-product/:idProduct', component: EditProductosComponent
+  },{
+    path: 'create-product', component: CreatProdComponent
   },
   {
     path: 'empleados', component: EmployeesComponent

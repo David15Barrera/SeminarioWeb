@@ -15,6 +15,17 @@ interface Product {
   supplier_id: number;
 }
 
+interface ProductCreationData {
+  name: string;
+  description: string;
+  price: number;
+  available_quantity: number;
+  status: 'HIDDEN' | 'DELETED' | 'OUT_OF_STOCK' | 'AVAILABLE';
+  image_url: string;
+  supplier_id: number;
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,8 +45,8 @@ export class ProductService {
   }
 
   // Crear un nuevo producto
-  createProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`${this.apiUrl}/create`, product);
+  createProduct(product: ProductCreationData): Observable<ProductCreationData> {
+    return this.http.post<ProductCreationData>(`${this.apiUrl}/create`, product);
   }
 
   // Actualizar un producto existente

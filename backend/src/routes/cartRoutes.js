@@ -8,7 +8,8 @@ import {
   getPendingCart,
   createPendingCart,
   addProductToCart,
-  getPendingCartItems
+  getPendingCartItems,
+  getCartItemsByCartId,
 } from '../controllers/cartController.js';
 
 const router = express.Router();
@@ -24,4 +25,5 @@ router.get('/pending/:userId', getPendingCart);
 router.post('/pending/:userId', createPendingCart);
 router.post('/addProduct/:userId', addProductToCart);
 router.get('/pending/items/:userId', getPendingCartItems);
+router.get('/by-cart/:cartId', getCartItemsByCartId); 
 export default router;

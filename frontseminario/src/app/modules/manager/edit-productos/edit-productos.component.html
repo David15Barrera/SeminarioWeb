@@ -1,1 +1,60 @@
-<p>edit-productos works!</p>
+<div class="p-6 bg-white rounded-lg shadow-md max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
+    <!-- Columna de la Imagen -->
+    <div class="flex-shrink-0">
+      <img [src]="product.image_url || 'https://via.placeholder.com/150'" alt="Imagen del producto" class="w-full md:w-64 h-auto rounded-lg shadow-md object-cover" />
+    </div>
+  
+    <!-- Columna del Formulario -->
+    <div class="w-full">
+      <h2 class="text-3xl font-bold mb-6 text-gray-800">Editar Producto</h2>
+      
+      <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="space-y-4">
+        
+        <div>
+          <label for="name" class="block text-gray-700 font-semibold">Nombre:</label>
+          <input type="text" id="name" [(ngModel)]="product.name" name="name" required
+                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+    
+        <div>
+          <label for="description" class="block text-gray-700 font-semibold">Descripción:</label>
+          <textarea id="description" [(ngModel)]="product.description" name="description" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+    
+        <div>
+          <label for="price" class="block text-gray-700 font-semibold">Precio:</label>
+          <input type="number" id="price" [(ngModel)]="product.price" name="price" required
+                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+    
+        <div>
+          <label for="available_quantity" class="block text-gray-700 font-semibold">Cantidad Disponible:</label>
+          <input type="number" id="available_quantity" [(ngModel)]="product.available_quantity" name="available_quantity" required
+                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+    
+        <div>
+          <label for="status" class="block text-gray-700 font-semibold">Estado:</label>
+          <select id="status" [(ngModel)]="product.status" name="status" required
+                  class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="HIDDEN">Oculto</option>
+            <option value="DELETED">Eliminado</option>
+            <option value="OUT_OF_STOCK">Sin Stock</option>
+            <option value="AVAILABLE">Disponible</option>
+          </select>
+        </div>
+    
+        <div>
+          <label for="image_url" class="block text-gray-700 font-semibold">URL de Imagen:</label>
+          <input type="text" id="image_url" [(ngModel)]="product.image_url" name="image_url"
+                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+    
+        <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+          Guardar Cambios
+        </button>
+      </form>
+    </div>
+  </div>
+  

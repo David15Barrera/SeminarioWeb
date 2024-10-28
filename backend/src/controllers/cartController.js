@@ -190,3 +190,24 @@ export const getPendingCartItems = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getCartItemsByCartId = async (req, res) => {
+  const { cartId } = req.params;
+
+  try {
+    // Obtener items del carrito usando el ID del carrito
+    const cartItems = await CartItem.findAll({
+      where: { cart_id: cartId },
+      include: [{ model: Product, attributes: ['name', 'price'] }], // Incluir el nombre y precio del producto
+    });
+
+    if (cartItems.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron items para este carrito.' });
+    }
+
+    res.status(200).json(cartItems);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

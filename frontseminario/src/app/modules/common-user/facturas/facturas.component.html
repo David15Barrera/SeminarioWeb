@@ -1,1 +1,37 @@
-<p>facturas works!</p>
+<div class="overflow-x-auto p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-4 text-gray-800">Facturas</h1>
+    <table class="min-w-full bg-white border border-gray-200">
+      <thead>
+        <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+          <th class="border border-gray-300 px-4 py-2">ID</th>
+          <th class="border border-gray-300 px-4 py-2">Usuario ID</th>
+          <th class="border border-gray-300 px-4 py-2">Total</th>
+          <th class="border border-gray-300 px-4 py-2">Estado</th>
+          <th class="border border-gray-300 px-4 py-2">Método de Pago</th>
+          <th class="border border-gray-300 px-4 py-2">Descuento</th>
+          <th class="border border-gray-300 px-4 py-2">Descripción del Error</th>
+          <th class="border border-gray-300 px-4 py-2">Fecha de Creación</th>
+          <th class="border border-gray-300 px-4 py-2">Detalles</th> <!-- Nueva columna -->
+        </tr>
+      </thead>
+      <tbody class="text-gray-600 text-sm font-light">
+        <tr *ngFor="let cart of carts" class="border-b border-gray-200 hover:bg-gray-100 transition duration-200">
+          <td class="border border-gray-300 px-4 py-2">{{ cart.id }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.user_id }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.total }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.status }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.payment_method }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.discount_payment_method }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.description_error || 'Sin Error' }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ cart.created_at || '30-10-2024 00:32:23' }}</td>
+          <td class="border border-gray-300 px-4 py-2">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">
+              Ver Detalles
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      
+    </table>
+  </div>
+  

@@ -13,7 +13,7 @@
     
     <div class="w-full md:w-2/3 flex gap-4 justify-end">
       <div class="flex gap-2">
-        <button [routerLink]="['/manager/edit-product/:idProduct']" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Crear</button>
+        <button [routerLink]="['/manager/create-product']" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Crear</button>
       </div>
       
     </div>
@@ -29,34 +29,24 @@
           </div>
     </div>
   
-    <div class="products-container grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Contenedor de productos -->
+    <div class="products-container grid grid-cols-1 md:grid-cols-3 gap-6 w-full md:w-3/4">
       <ng-container *ngIf="filteredProducts.length; else noProducts">
         <div *ngFor="let product of filteredProducts; trackBy: trackByIndex" class="bg-white rounded-lg shadow-md overflow-hidden">
-          <img class="w-full h-48 object-cover" 
-               *ngIf="product.imageUrls && product.imageUrls.length > 1" 
-               [src]="product.imageUrls[1]" 
-               [alt]="product.name">
-          <img class="w-full h-48 object-cover" 
-               *ngIf="product.imageUrls && product.imageUrls.length === 1" 
-               [src]="product.imageUrls[0]" 
-               [alt]="product.name">
-          <img class="w-full h-48 object-cover" 
-               *ngIf="!product.imageUrls || product.imageUrls.length === 0" 
-               src="https://via.placeholder.com/150" 
-               alt="default image">
-          
+          <img class="w-full h-48 object-cover" *ngIf="product.image_url && product.image_url.length > 1" [src]="product.image_url" [alt]="product.name">
+    
           <div class="p-4">
-            <p class="font-bold text-lg">{{product.name | uppercase}}</p>
-            <p>{{ product.description }}</p>
-            <p><strong>Price:</strong> {{ product.price }}</p>
-            <p><strong>Estado:</strong> {{ product.state }}</p>
+            <p class="font-bold text-lg">{{ product.name | uppercase }}</p>
+            <p><strong>Price Q:</strong> {{ product.price }}</p>
+            <p><strong>Estado:</strong> {{ product.status }}</p>
           </div>
-  
+    
           <div class="p-4 flex justify-between">
-            <a  [routerLink]="['/manager/edit-product/:idProduct']" routerLinkActive="router-link-active"  class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Editar</a>
+            <a  [routerLink]="['/manager/edit-product/', product.id]" routerLinkActive="router-link-active"  class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Editar</a>
           </div>
         </div>
       </ng-container>
+      
       
       <ng-template #noProducts>
         <p>No se encontraron productos.</p>

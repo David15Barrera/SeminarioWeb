@@ -125,7 +125,7 @@ private createOrUpdateCartItem(cartId: number, product: any, quantity: number): 
 
     // Obtener items de carrito por ID de carrito
     getCartItemsByCartId(cartId: number): Observable<CartItem[]> {
-        return this.http.get<CartItem[]>(`${this.cartItemUrl}/by-cart/${cartId}`);
+        return this.http.get<CartItem[]>(`${this.apiUrl}/by-cart/${cartId}`);
     }
 
     // Obtener un item de carrito por ID
@@ -142,4 +142,13 @@ private createOrUpdateCartItem(cartId: number, product: any, quantity: number): 
     deleteCartItem(id: number): Observable<void> {
         return this.http.delete<void>(`${this.cartItemUrl}/delete/${id}`);
     }
+
+   // Obtener carritos por estado
+   getCartsByUserIdAndStatus(userId: number, status: 'COMPLETED' | 'CANCELLED_ERROR'): Observable<Cart[]> {
+    return this.http.get<Cart[]>(`${this.apiUrl}/all`).pipe(
+        map((carts: Cart[]) =>
+            carts.filter(cart => cart.user_id === userId && cart.status === status)
+        )
+    );
+}
 }
