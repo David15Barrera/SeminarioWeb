@@ -1,4 +1,5 @@
 // src/app/models/cart.model.ts
+
 export interface Cart {
     id: number;
     total: number;
@@ -17,4 +18,17 @@ export interface CartItem {
     sub_total: number;
     cart_id: number;
     product_id: number;
+}
+
+export interface CartItemSimple {
+    id: number;
+    quantity: number;
+    sub_total: number;
+    cart_id: number;
+    product_id: number;
+    product: {
+        name: string;
+        image_url: string;
+        price: number;
+    };
 }

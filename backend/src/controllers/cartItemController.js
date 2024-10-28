@@ -63,3 +63,25 @@ export const deleteCartItem = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Actualiza la cantidad y subtotal de un item en el carrito
+export const updateCartItemDetails = async (req, res) => {
+  const { id } = req.params; // ID del CartItem a actualizar
+  const { quantity, sub_total } = req.body; // Nuevos valores
+
+  try {
+    const cartItem = await CartItem.findByPk(id);
+    if (!cartItem) {
+      return res.status(404).json({ message: 'Cart Item no encontrado' });
+    }
+
+    // Actualiza la cantidad y subtotal
+    cartItem.quantity = quantity;
+    cartItem.sub_total = sub_total;
+    await cartItem.save();
+
+    res.status(200).json(cartItem);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

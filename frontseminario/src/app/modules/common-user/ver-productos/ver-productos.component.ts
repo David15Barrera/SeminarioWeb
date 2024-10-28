@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/categories.service';
+import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -34,14 +35,17 @@ export class VerProductosComponent implements OnInit {
   product: Product | null = null;
   quantity: number = 1; // Cantidad a agregar
   categories: string[] = []; // Cambia a un arreglo de strings
+  userId: number | null = null; // ID del usuario
 
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private cartService: CartService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.loadUserId();
     const id = this.route.snapshot.paramMap.get('idproduct');
     if (id) {
       this.loadProduct(+id);
@@ -52,6 +56,20 @@ export class VerProductosComponent implements OnInit {
         icon: 'error',
         confirmButtonText: 'Cool',
       });
+    }
+  }
+
+  // Cargar el ID del usuario desde el localStorage
+  loadUserId() {
+    if (typeof window !== 'undefined' && localStorage) {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (storedUser && storedUser.id) {
+        this.userId = storedUser.id;
+      } else {
+        console.error('No se encontró el usuario en el localStorage');
+      }
+    } else {
+      console.warn('localStorage no está disponible en este entorno.');
     }
   }
 
@@ -90,12 +108,30 @@ export class VerProductosComponent implements OnInit {
       }
     );
   }
-  
 
   addToCart() {
-    if (this.product) {
-      console.log(`Agregado al carrito: ${this.product.name}, Cantidad: ${this.quantity}, id: ${this.product.id}`);
-      // Lógica para agregar el producto al carrito
+    if (this.product && this.userId !== null) {
+      this.cartService.addProductToCart(this.userId, this.product, this.quantity).subscribe(
+        () => {
+          Swal.fire({
+            title: 'Agregado al carrito',
+            text: `El producto se añadido al carrito.`,
+            icon: 'success',
+            confirmButtonText: 'Cool'
+          });
+        },
+        error => {
+          console.error('Error al agregar al carrito:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Error al agregar el producto al carrito',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+          });
+        }
+      );
+    } else {
+      console.warn('Producto o userId no disponible para agregar al carrito.');
     }
   }
 }

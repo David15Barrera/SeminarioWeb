@@ -1,7 +1,7 @@
 // src/models/cartItem.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-
+import Product from './product.js';
 const CartItem = sequelize.define('CartItem', {
   id: {
     type: DataTypes.INTEGER,
@@ -37,4 +37,5 @@ const CartItem = sequelize.define('CartItem', {
   timestamps: false,
 });
 
+CartItem.belongsTo(Product, { foreignKey: 'product_id' });
 export default CartItem;

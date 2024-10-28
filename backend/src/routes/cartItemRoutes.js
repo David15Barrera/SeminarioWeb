@@ -5,6 +5,7 @@ import {
   getCartItemById,
   updateCartItem,
   deleteCartItem,
+  updateCartItemDetails
 } from '../controllers/cartItemController.js';
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get('/all', getCartItems); // Obtener todos los carritos
 router.get('/:id', getCartItemById); //Obtener los carritos por el id
 router.put('/update/:id', updateCartItem); // Actualizar los carritos
 router.delete('/delete/:id', deleteCartItem); //Eminar un carrito los carritos
+router.put('/update/:id', updateCartItemDetails)
 
 export default router;
