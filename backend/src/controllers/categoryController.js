@@ -1,5 +1,5 @@
 import Category from '../models/category.js';
-
+import Product from '../models/product.js';
 // Crear una nueva categoría
 export const createCategory = async (req, res) => {
   try {
@@ -64,5 +64,32 @@ export const deleteCategory = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getCategoriesByProductId = async (req, res) => {
+  const productId = req.params.id;
+
+  try {
+    // Obtener el producto junto con sus categorías
+    const product = await Product.findByPk(productId, {
+      include: {
+        model: Category,
+        through: {
+          attributes: [] // Ocultar atributos de la tabla intermedia
+        }
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    // Extraer los nombres de las categorías
+    const categories = product.categories.map(category => category.name);
+
+    res.status(200).json({ productId, categories });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

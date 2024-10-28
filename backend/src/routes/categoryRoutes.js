@@ -5,14 +5,16 @@ import {
   getCategoryById,
   updateCategory,
   deleteCategory,
+  getCategoriesByProductId
 } from '../controllers/categoryController.js';
 
 const router = express.Router();
 
-router.post('/create', createCategory); // Ruta para crear una nueva categoría
-router.get('/all', getAllCategories); // Ruta para obtener todas las categorías
-router.get('/:id', getCategoryById); // Ruta para obtener una categoría por ID
-router.put('/update/:id', updateCategory); // Ruta para actualizar una categoría
-router.delete('/delete/:id', deleteCategory); // Ruta para eliminar una categoría
+router.post('/create', createCategory);
+router.get('/all', getAllCategories);
+router.get('/:id', getCategoryById);
+router.put('/update/:id', updateCategory);
+router.delete('/delete/:id', deleteCategory);
+router.get('/productos/:id/categorias', getCategoriesByProductId);
 
 export default router;

@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ProductService } from '../../services/product.service';
 interface Product {
   id: number;
   name: string;
   description: string;
   price: number;
-  state: string;
-  categoryId: number; // Asegúrate de incluir categoryId
-  imageUrls: string[];
+  available_quantity: number;
+  status: 'HIDDEN' | 'DELETED' | 'OUT_OF_STOCK' | 'AVAILABLE';
+  created_at: string;
+  image_url: string;
 }
+
 interface Category {
   id: number;
   name: string;
@@ -22,65 +26,49 @@ interface Category {
   styleUrl: './productos.component.scss'
 })
 export class ProductosComponent implements OnInit {
-  products: Product[] = []; // Define el tipo como Product[]
-  filteredProducts: Product[] = []; // Define el tipo como Product[]
-  categories: Category[] = []; // Define el tipo como Category[]
+  products: Product[] = [];
+  filteredProducts: Product[] = [];
+  categories: Category[] = [];
+
+  constructor(private productService: ProductService) {} // Inyectar el servicio
+
   ngOnInit() {
+    this.loadProducts(); // Llamar a la función para cargar los productos
     // Datos falsos de categorías
     this.categories = [
       { id: 1, name: 'Tecnología' },
       { id: 2, name: 'Hogar' },
       { id: 3, name: 'Ropa' },
     ];
-    // Datos falsos de productos
-    this.products = [
-      {
-        id: 1,
-        name: 'Servicio 1',
-        description: 'Descripción del Servicio 1',
-        price: 100,
-        state: 'Disponible',
-        categoryId: 1,
-        imageUrls: ['https://static.nationalgeographic.es/files/styles/image_3200/public/75552.ngsversion.1422285553360.jpg?w=1900&h=1267']
-      },
-      {
-        id: 2,
-        name: 'Servicio 2',
-        description: 'Descripción del Servicio 2',
-        price: 200,
-        state: 'Disponible',
-        categoryId: 2,
-        imageUrls: ['https://static.nationalgeographic.es/files/styles/image_3200/public/75552.ngsversion.1422285553360.jpg?w=1900&h=1267']
-      },
-      {
-        id: 3,
-        name: 'Servicio 3',
-        description: 'Descripción del Servicio 3',
-        price: 300,
-        state: 'No disponible',
-        categoryId: 3,
-        imageUrls: ['https://static.nationalgeographic.es/files/styles/image_3200/public/75552.ngsversion.1422285553360.jpg?w=1900&h=1267']
-      }
-    ];
-    this.filteredProducts = this.products;
   }
+
+  loadProducts() {
+    this.productService.getAllProducts().subscribe((data: Product[]) => {
+      // Filtrar solo los productos que tienen el estado 'AVAILABLE'
+      this.products = data.filter(product => product.status === 'AVAILABLE');
+      this.filteredProducts = this.products; // Inicializar filteredProducts
+    }, error => {
+      console.error('Error al cargar productos:', error); // Manejo de errores
+    });
+  }
+  
   onSearch(event: any) {
     const query = event.target.value.toLowerCase();
     this.filteredProducts = this.products.filter(product => product.name.toLowerCase().includes(query));
   }
+
   onFilterChange(filter: string) {
     if (filter === 'available') {
-      this.filteredProducts = this.products.filter(product => product.state === 'Disponible');
-    } else if (filter === 'popular') {
-      // Lógica para productos populares (esto es solo un ejemplo)
-      this.filteredProducts = this.products.filter(product => product.price > 150);
+      this.filteredProducts = this.products.filter(product => product.status === 'AVAILABLE');
     } else {
       this.filteredProducts = this.products;
     }
   }
+
   onCategoryChange(categoryId: number) {
-    this.filteredProducts = this.products.filter(product => product.categoryId === categoryId);
+
   }
+
   addToCart(product: Product) {
     console.log('Servicio agregado al carrito:', product);
   }

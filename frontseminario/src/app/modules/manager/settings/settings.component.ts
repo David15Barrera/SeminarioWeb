@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
+import { User } from '../interfaces/user.model';
+import Swal from 'sweetalert2'
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -9,7 +13,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
-  user = {
+  user: User = {
+    id: 0,
     name: '',
     email: '',
     address: '',
@@ -18,27 +23,43 @@ export class SettingsComponent implements OnInit {
     payment_method: 'PAYPAL'
   };
   confirmPassword: string = '';
-
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  constructor() {}
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.loadUserData();
   }
 
   loadUserData() {
-    // Cargar los datos del usuario actual desde tu API
-    this.user = {
-      name: 'Juan Pérez',
-      email: 'juan.perez@ejemplo.com',
-      address: 'Calle Falsa 123',
-      nit: '1234567890',
-      password: '',
-      payment_method: 'PAYPAL'
-    };
+    if (typeof window !== 'undefined' && localStorage) {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  
+      if (storedUser && storedUser.id) {
+        const userId = storedUser.id;
+        this.userService.getUserById(userId).subscribe(
+          (userData) => {
+            this.user = userData;
+          },
+          (error) => {
+            console.error('Error al obtener los datos del usuario:', error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'Error al obtener los datos del usuario:',
+              icon: 'error',
+              confirmButtonText: 'Cool'
+            })
+          }
+        );
+      } else {
+        console.error('No se encontró el usuario en el localStorage');
+      }
+    } else {
+      console.warn('localStorage no está disponible en este entorno.');
+    }
   }
+  
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -50,12 +71,33 @@ export class SettingsComponent implements OnInit {
 
   updateAccount() {
     if (this.user.password && this.user.password !== this.confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      Swal.fire({
+        title: 'Error!',
+        text: 'Contraseñas no coinciden',
+        icon: 'error',
+        confirmButtonText: 'Cool'
+      })
       return;
     }
 
-    // Lógica para enviar los datos actualizados al backend
-    console.log('Datos del usuario actualizados:', this.user);
-    // Llamada al servicio para actualizar los datos
+    this.userService.updateUser(this.user.id, this.user).subscribe(
+      (updatedUser) => {
+        console.log('Datos del usuario actualizados:', updatedUser);
+        Swal.fire({
+          title: "Usuario",
+          text: "Usuario actualizado correctamente",
+          icon: "success"
+        });
+      },
+      (error) => {
+        console.error('Error al actualizar los datos del usuario:', error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error al actualizar los datos',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      }
+    );
   }
 }
