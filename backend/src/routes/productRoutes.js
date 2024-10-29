@@ -6,6 +6,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductsInRange
 } from '../controllers/productController.js';
 
 const router = Router();
@@ -17,4 +18,6 @@ router.post('/create', createProduct);
 router.put('/update/:id', updateProduct);
 router.delete('/delete/:id', deleteProduct);
 
+// Nueva ruta para el reporte de productos hasta una fecha
+router.get('/report', getProductsInRange); 
 export default router;

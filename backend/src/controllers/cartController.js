@@ -1,8 +1,10 @@
 // src/controllers/cartController.js
+import sequelize from '../config/database.js';
 import Cart from '../models/cart.js';
 import CartItem from '../models/cartItem.js';
 import Product from '../models/product.js';
-
+import Supplier from '../models/supplier.js';
+import { Op } from 'sequelize';
 // Crear un nuevo carrito
 export const createCart = async (req, res) => {
   try {
@@ -207,6 +209,77 @@ export const getCartItemsByCartId = async (req, res) => {
     }
 
     res.status(200).json(cartItems);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getProductsReport = async (req, res) => {
+  try {
+    const cartItems = await CartItem.findAll({
+      include: [
+        {
+          model: Product,
+          attributes: ['id', 'name', 'price'], // Selecciona los atributos que necesitas
+          include: [{
+            model: Supplier,
+            attributes: ['id', 'name'] // Cambia los atributos según lo que necesites
+          }]
+        }
+      ],
+    });
+
+    // Formatear el reporte
+    const report = cartItems.map(item => ({
+      productId: item.product.id,
+      productName: item.product.name,
+      category: item.product.categories, // Asegúrate de que tengas la relación correctamente
+      supplier: item.product.supplier.name,
+      quantity: item.quantity,
+      total: item.sub_total
+    }));
+
+    res.status(200).json(report);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getAboveAverageSalesProducts = async (req, res) => {
+  try {
+    // 1. Obtener todos los items del carrito
+    const cartItems = await CartItem.findAll();
+
+    // 2. Calcular el total de ventas y el número de productos vendidos
+    const totalSales = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    const totalProductsSold = cartItems.length;
+
+    // 3. Calcular el promedio de ventas
+    const averageSales = totalProductsSold ? totalSales / totalProductsSold : 0;
+
+    // 4. Obtener los productos que superan el promedio de ventas
+    const aboveAverageProducts = await CartItem.findAll({
+      attributes: ['product_id', [sequelize.fn('SUM', sequelize.col('quantity')), 'total_quantity']],
+      group: ['product_id'],
+      having: sequelize.where(sequelize.fn('SUM', sequelize.col('quantity')), {
+        [Op.gt]: averageSales // Usar Op.gt correctamente
+      }),
+      include: [{
+        model: Product,
+        attributes: ['id', 'name'],
+      }]
+    });
+
+    // 5. Formatear la respuesta
+    const report = aboveAverageProducts.map(item => ({
+      productId: item.product.id,
+      productName: item.product.name,
+      totalSold: item.dataValues.total_quantity,
+    }));
+
+    res.status(200).json(report);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

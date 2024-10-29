@@ -3,6 +3,25 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Supplier } from '../interfaces/supplier.model';
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  available_quantity: number;
+  status: 'HIDDEN' | 'DELETED' | 'OUT_OF_STOCK' | 'AVAILABLE';
+  created_at: string;
+  image_url: string;
+  supplier_id: number;
+}
+
+interface Productop {
+  productId: number;         // Cambia 'id' a 'productId'
+  productName: string;       // Cambia 'name' a 'productName'
+  totalSold: string;         // Cambia 'available_quantity' a 'totalSold'
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,4 +54,16 @@ export class SupplierService {
   deleteSupplier(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/delete/${id}`);
   }
+
+
+   // Obtener productos más vendidos
+   getBestSellingProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>('http://localhost:3000/api/carts/reportv/products');
+  }
+
+
+ // Obtener productos por encima del promedio
+ getProductsAboveAverage(): Observable<Productop[]> {
+  return this.http.get<Productop[]>('http://localhost:3000/api/carts/report/products/above-average');
+}
 }

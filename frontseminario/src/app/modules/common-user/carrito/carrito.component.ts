@@ -19,15 +19,20 @@ export class CarritoComponent implements OnInit {
   isPaymentModalOpen = false; // Estado del modal
   selectedPaymentMethod: 'PAYPAL' | 'PAYMENT_GATEWAY' = 'PAYPAL';
   isCheckoutModalVisible: boolean = false;
-
+  totalAmount: number = 0; // Nueva propiedad para el total
+  paypalForm: any = { // Agregar formulario para PayPal
+    email: '',
+    transactionId: '',
+  };
 
   constructor(private cartService: CartService, private productService: ProductService) {}
 
   ngOnInit(): void {
     this.loadUserId(); 
     this.loadCartItems();
+    this.calculateTotal2(); 
   }
-
+  
   loadUserId() {
     if (typeof window !== 'undefined' && localStorage) {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -69,6 +74,10 @@ export class CarritoComponent implements OnInit {
 
   calculateTotal(): number {
     return this.cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  }
+  calculateTotal2(): number {
+    this.totalAmount = this.cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    return this.totalAmount;
   }
 
   increaseQuantity(item: CartItemSimple) {
@@ -153,7 +162,7 @@ export class CarritoComponent implements OnInit {
   confirmPayment() {
     const tax = this.selectedPaymentMethod === 'PAYPAL' ? 10 : 5;
     const totalAmount = this.calculateTotal() + tax;
-  
+
     if (this.userId !== null) {
       this.cartService.getPendingCart(this.userId).subscribe(cart => {
         if (cart) {
@@ -166,23 +175,29 @@ export class CarritoComponent implements OnInit {
             discount_payment_method: cart.discount_payment_method,
             user_id: cart.user_id
           };
-  
+
           // Actualizar el carrito y confirmar el pago
           this.cartService.updateCart(updatedCart.id, updatedCart).subscribe(
             () => {
-              Swal.fire('Pago Exitoso', 'El pago se ha completado correctamente', 'success');
+              // Aquí manejar el pago con PayPal
+              if (this.selectedPaymentMethod === 'PAYPAL') {
+                // Aquí podrías incluir la lógica de pago con PayPal
+                // Por ejemplo, supongamos que tienes un servicio para procesar el pago
+                // Simulando el pago exitoso
+                this.paypalForm.transactionId = 'PAYPAL_TRANSACTION_ID'; // Simulando un ID de transacción
+                Swal.fire('Pago Exitoso', 'El pago se ha completado correctamente', 'success');
+              }
+
               this.isCheckoutModalVisible = false;
-  
-              // Obtener la cantidad disponible y actualizar cada producto en el carrito
+
               this.cartItems.forEach(item => {
                 this.productService.getProductById(item.product_id).subscribe(product => {
                   const updatedQuantity = product.available_quantity - item.quantity;
-  
-                  // Asegúrate de que la cantidad no sea negativa
+
                   if (updatedQuantity >= 0) {
                     this.productService.updateProduct(item.product_id, {
-                      ...product, // Mantener los otros campos del producto
-                      available_quantity: updatedQuantity // Actualizar solo la cantidad disponible
+                      ...product,
+                      available_quantity: updatedQuantity
                     }).subscribe(() => {
                       console.log(`Cantidad actualizada para el producto ID ${item.product_id}`);
                     });

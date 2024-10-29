@@ -85,3 +85,18 @@ export const updateCartItemDetails = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getTotalSalesReport = async (req, res) => {
+  try {
+    // 1. Obtener todos los ítems del carrito
+    const cartItems = await CartItem.findAll();
+
+    // 2. Calcular el total de ventas
+    const totalSales = cartItems.reduce((acc, item) => acc + item.sub_total, 0);
+
+    // 3. Retornar el saldo total de ventas
+    res.status(200).json({ totalSales });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

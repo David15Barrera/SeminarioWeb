@@ -10,6 +10,8 @@ import {
   addProductToCart,
   getPendingCartItems,
   getCartItemsByCartId,
+  getProductsReport,
+  getAboveAverageSalesProducts
 } from '../controllers/cartController.js';
 
 const router = express.Router();
@@ -26,4 +28,7 @@ router.post('/pending/:userId', createPendingCart);
 router.post('/addProduct/:userId', addProductToCart);
 router.get('/pending/items/:userId', getPendingCartItems);
 router.get('/by-cart/:cartId', getCartItemsByCartId); 
+router.get('/reportv/products', getProductsReport);
+router.get('/report/products/above-average', getAboveAverageSalesProducts);
+
 export default router;

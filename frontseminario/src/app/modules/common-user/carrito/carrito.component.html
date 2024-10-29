@@ -48,13 +48,22 @@
     <h2 class="text-2xl font-semibold mb-4">Confirmación de Pago</h2>
     <p class="mb-4">Total: Q{{ calculateTotal() }}</p>
     <label class="block mb-2">Selecciona un método de pago:</label>
-    <select [(ngModel)]="selectedPaymentMethod" class="w-full p-2 border rounded">
+    <select [(ngModel)]="selectedPaymentMethod" (change)="paypalForm = {}" class="w-full p-2 border rounded">
       <option value="PAYPAL">PayPal (+10 Tax)</option>
       <option value="PAYMENT_GATEWAY">Payment Gateway (+5 Tax)</option>
     </select>
-    <div class="flex justify-between mt-6">
-      <button (click)="confirmPayment()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Pagar</button>
-      <button (click)="cancelCheckout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancelar</button>
+    
+    <div *ngIf="selectedPaymentMethod === 'PAYPAL'" class="mt-4">
+      <h3 class="text-lg font-semibold mb-2">Formulario de PayPal</h3>
+      <label class="block mb-1">Email:</label>
+      <input type="email" [(ngModel)]="paypalForm.email" class="w-full p-2 border rounded mb-2" required>
+      <label class="block mb-1">ID de Transacción:</label>
+      <input type="text" [(ngModel)]="paypalForm.transactionId" class="w-full p-2 border rounded" readonly>
+    </div>
+
+    <div class="mt-4 flex justify-between">
+      <button (click)="cancelCheckout()" class="bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
+      <button (click)="confirmPayment()" class="bg-green-500 text-white px-4 py-2 rounded">Confirmar Pago</button>
     </div>
   </div>
 </div>

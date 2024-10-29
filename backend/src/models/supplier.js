@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-
+import Product from './product.js';
 const Supplier = sequelize.define('supplier', {
   id: {
     type: DataTypes.INTEGER,
@@ -24,4 +24,6 @@ const Supplier = sequelize.define('supplier', {
   timestamps: false,
 });
 
+
+Product.belongsTo(Supplier, { foreignKey: 'supplier_id' }); 
 export default Supplier;
