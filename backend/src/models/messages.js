@@ -1,3 +1,4 @@
+// src/models/messages.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import Chat from './chat.js';
@@ -28,5 +29,8 @@ const Messages = sequelize.define('Messages', {
   tableName: 'messages',
   timestamps: false,
 });
+
+// Definir la relación
+Messages.belongsTo(Chat, { foreignKey: 'chat_id' });
 
 export default Messages;

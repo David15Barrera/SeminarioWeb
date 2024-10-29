@@ -9,3 +9,7 @@ export interface User {
     payment_method: 'PAYPAL' | 'PAYMENT_GATEWAY';
     created_at?: string;
   }
+
+  export interface UserWithMessages extends User {
+    hasMessages?: boolean; // Propiedad adicional
+}

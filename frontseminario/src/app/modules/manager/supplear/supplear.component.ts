@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-interface Supplier {
-  id: number;
-  name: string;
-  description: string;
-  address: string;
-}
-
-
+import { SupplierService } from '../../services/supplier.service';
+import { Supplier } from '../../interfaces/supplier.model';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-supplear',
   standalone: true,
@@ -18,19 +12,26 @@ interface Supplier {
   styleUrl: './supplear.component.scss'
 })
 export class SupplearComponent implements OnInit {
-  suppliers: Supplier[] = [
-    { id: 1, name: 'Proveedor A', description: 'Descripción A', address: 'Dirección A' },
-    { id: 2, name: 'Proveedor B', description: 'Descripción B', address: 'Dirección B' }
-  ];
-
+  suppliers: Supplier[] = [];
   isModalOpen = false;
   selectedSupplier: Supplier | null = null;
   supplierData: Supplier = { id: 0, name: '', description: '', address: '' };
 
-  constructor() {}
+  constructor(private supplierService: SupplierService) {} // Inyecta el servicio
 
   ngOnInit(): void {
-    // Aquí puedes cargar los proveedores desde una API si es necesario.
+    this.loadSuppliers(); // Cargar proveedores al iniciar el componente
+  }
+
+  loadSuppliers() {
+    this.supplierService.getAllSuppliers().subscribe(
+      (data: Supplier[]) => {
+        this.suppliers = data; // Asignar la respuesta a suppliers
+      },
+      (error) => {
+        console.error('Error al cargar proveedores:', error);
+      }
+    );
   }
 
   openAddModal() {
@@ -53,24 +54,74 @@ export class SupplearComponent implements OnInit {
   saveSupplier() {
     if (this.selectedSupplier) {
       // Editar proveedor
-      const index = this.suppliers.findIndex(s => s.id);
-      if (index !== -1) {
-        this.suppliers[index] = { ...this.supplierData };
-      }
+      this.supplierService.updateSupplier(this.selectedSupplier.id, this.supplierData).subscribe(
+        (updatedSupplier) => {
+          const index = this.suppliers.findIndex(s => s.id === updatedSupplier.id);
+          if (index !== -1) {
+            this.suppliers[index] = updatedSupplier; // Actualizar el proveedor en la lista
+          }
+          this.closeModal();
+
+          Swal.fire({
+            title: "Good job!",
+            text: "Proveedor Actualizado con éxito.",
+            icon: "success"
+          });
+        },
+        (error) => {
+          console.error('Error al actualizar el proveedor:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Error al actualizar el proveedor',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+          })
+        }
+      );
     } else {
       // Agregar proveedor
-      this.supplierData.id = this.suppliers.length + 1; // Asignar un nuevo ID
-      this.suppliers.push({ ...this.supplierData });
+      this.supplierService.createSupplier(this.supplierData).subscribe(
+        (newSupplier) => {
+          this.suppliers.push(newSupplier); // Agregar el nuevo proveedor a la lista
+          this.closeModal();
+          Swal.fire({
+            title: "Good job!",
+            text: "Proveedor agregado con éxito.",
+            icon: "success"
+          });
+        },
+        (error) => {
+          console.error('Error al agregar el proveedor:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: 'Error al agregar el proveedor',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+          })
+        }
+      );
     }
-    
-    // Cerrar el modal y mostrar un mensaje de éxito
-    this.closeModal();
-    alert('Proveedor guardado con éxito.');
   }
-  
 
   deleteSupplier(id: number) {
-    this.suppliers = this.suppliers.filter(s => s.id !== id);
-    alert('Proveedor eliminado con éxito.');
+    this.supplierService.deleteSupplier(id).subscribe(
+      () => {
+        this.suppliers = this.suppliers.filter(s => s.id !== id); // Eliminar de la lista
+        Swal.fire({
+          title: "Good job!",
+          text: "Proveedor eliminado con éxito.",
+          icon: "success"
+        });
+      },
+      (error) => {
+        console.error('Error al eliminar el proveedor:', error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error al eliminar el proveedor:',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        })
+      }
+    );
   }
 }

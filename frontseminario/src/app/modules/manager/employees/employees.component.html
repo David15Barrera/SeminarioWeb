@@ -14,9 +14,10 @@
         <tr *ngFor="let employee of employees" class="border-b">
           <td class="border border-gray-200 px-4 py-2">{{ employee.name }}</td>
           <td class="border border-gray-200 px-4 py-2">{{ employee.email }}</td>
-          <td class="border border-gray-200 px-4 py-2">{{ employee.role }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ roleNames[employee.role_id] }}</td>
           <td class="border border-gray-200 px-4 py-2">
             <button (click)="openEditModal(employee)" class="text-blue-500 hover:underline">Editar</button>
+            <button (click)="deleteEmployee(employee.id, employee.name)" class="text-red-500 hover:underline ml-2">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -27,11 +28,12 @@
       <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white rounded-lg p-6 w-96">
           <h3 class="text-lg font-semibold mb-4">Editar Rol de {{ selectedEmployee?.name }}</h3>
-          <select [(ngModel)]="selectedRole" class="border border-gray-300 rounded-lg w-full mb-4">
-            <option value="ADMIN">Admin</option>
-            <option value="AYUDANTE">Ayudante</option>
-            <option value="EMPLEADO">Empleado</option>
+          <select [(ngModel)]="selectedRoleId" class="border border-gray-300 rounded-lg w-full mb-4">
+            <option [value]="1">Administrador</option>
+            <option [value]="2">Cliente</option>
+            <option [value]="3">Empleado</option>
           </select>
+                    
           <div class="flex justify-end">
             <button (click)="updateRole()" class="bg-blue-500 text-white py-2 px-4 rounded-lg mr-2">Actualizar</button>
             <button (click)="closeEditModal()" class="bg-red-500 text-white py-2 px-4 rounded-lg">Cancelar</button>

@@ -13,3 +13,4 @@ router.get('/:chat_id', getChatParticipants); // Ruta para obtener los participa
 router.delete('/:chat_id/:user_id', removeParticipant); // Ruta para eliminar un participante de un chat
 
 export default router;
+             

@@ -75,3 +75,26 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+// Cambiar el rol de un usuario
+export const updateUserRole = async (req, res) => {
+  const { id } = req.params; // ID del usuario
+  const { role_id } = req.body; // Nuevo rol
+
+  try {
+    // Verificar si el usuario existe
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Actualizar el rol del usuario
+    user.role_id = role_id;
+    await user.save();
+
+    res.status(200).json({ message: 'Rol de usuario actualizado', user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

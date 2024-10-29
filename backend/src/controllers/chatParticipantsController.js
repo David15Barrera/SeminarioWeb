@@ -41,14 +41,21 @@ export const getChatParticipants = async (req, res) => {
     // Obtener todos los participantes del chat
     const participants = await ChatParticipants.findAll({
       where: { chat_id },
-      include: [{ model: User, attributes: ['id', 'username'] }],
+      include: [{ model: User, attributes: ['id', 'name'] }],
     });
+
+    if (!participants || participants.length === 0) {
+      return res.status(404).json({ message: 'No participants found for this chat' });
+    }
 
     res.status(200).json(participants);
   } catch (error) {
+    console.error(error);  // Para depuración
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // Eliminar un participante de un chat
 export const removeParticipant = async (req, res) => {
@@ -68,3 +75,4 @@ export const removeParticipant = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

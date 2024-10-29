@@ -35,4 +35,8 @@ export class UserService {
     deleteUser(id: number): Observable<void> {
       return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
     }
+     // Actualizar el rol de un usuario
+  updateUserRole(id_user: number, role_id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/updaterole/${id_user}`, { role_id });
+  }
 }

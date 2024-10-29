@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
+import { User } from '../interfaces/user.model';
+import Swal from 'sweetalert2';
 interface Employee {
   id: number;
   name: string;
   email: string;
-  role: 'ADMIN' | 'AYUDANTE' | 'EMPLEADO';
+  role_id: number;
 }
 
 @Component({
@@ -16,25 +19,38 @@ interface Employee {
   styleUrl: './employees.component.scss'
 })
 export class EmployeesComponent implements OnInit {
-  employees: Employee[] = [
-    { id: 1, name: 'Juan Pérez', email: 'juan@example.com', role: 'ADMIN' },
-    { id: 2, name: 'Ana Gómez', email: 'ana@example.com', role: 'AYUDANTE' },
-    { id: 3, name: 'Luis Rodríguez', email: 'luis@example.com', role: 'EMPLEADO' }
-  ];
-
+  employees: Employee[] = [];
   isModalOpen = false;
   selectedEmployee: Employee | null = null;
-  selectedRole: string = '';
+  selectedRoleId: number = 0;
 
-  constructor() {}
+  roleNames: { [key: number]: string } = {
+    1: 'Administrador',
+    2: 'Cliente',
+    3: 'Empleado'
+  };
+
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    // Aquí puedes cargar los empleados desde una API si es necesario.
+    this.loadEmployees();
+  }
+
+  loadEmployees() {
+    this.userService.getAllUsers().subscribe(
+      (data) => (this.employees = data.map(user => ({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role_id: user.role_id || 3
+      }))),
+      (error) => console.error('Error al cargar empleados:', error)
+    );
   }
 
   openEditModal(employee: Employee) {
     this.selectedEmployee = employee;
-    this.selectedRole = employee.role;
+    this.selectedRoleId = employee.role_id;
     this.isModalOpen = true;
   }
 
@@ -44,8 +60,36 @@ export class EmployeesComponent implements OnInit {
   }
 
   updateRole() {
- // Aquí puedes realizar una llamada a la API para guardar los cambios.
-      alert(`Rol de actualizado a ${this.selectedRole}`);
+    if (this.selectedEmployee) {
+      this.userService.updateUserRole(this.selectedEmployee.id, this.selectedRoleId).subscribe(
+        () => {
+          Swal.fire('Éxito', `Rol de ${this.selectedEmployee?.name} actualizado exitosamente`, 'success');
+          this.loadEmployees();
+          this.closeEditModal();
+        },
+        (error) => Swal.fire('Error', 'Error al actualizar el rol', 'error')
+      );
+    }
+  }
 
+  deleteEmployee(id: number, name: string) {
+    Swal.fire({
+      title: `¿Eliminar a ${name}?`,
+      text: "No podrás revertir esta acción",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.deleteUser(id).subscribe(
+          () => {
+            Swal.fire('Eliminado', `${name} ha sido eliminado.`, 'success');
+            this.loadEmployees();
+          },
+          (error) => Swal.fire('Error', 'No se pudo eliminar el usuario', 'error')
+        );
+      }
+    });
   }
 }

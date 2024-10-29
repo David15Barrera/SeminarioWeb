@@ -1,3 +1,4 @@
+// src/models/chat.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
@@ -17,3 +18,4 @@ const Chat = sequelize.define('Chat', {
 });
 
 export default Chat;
+

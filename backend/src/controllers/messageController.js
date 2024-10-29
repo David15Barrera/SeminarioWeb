@@ -4,8 +4,8 @@ import Messages from '../models/messages.js';
 // Crear un nuevo mensaje en el chat
 export const createMessage = async (req, res) => {
   try {
-    const { message, chat_id } = req.body;
-    const newMessage = await Messages.create({ message, chat_id });
+    const { message, chat_id, user_id } = req.body;
+    const newMessage = await Messages.create({ message, chat_id, user_id });
     res.status(201).json(newMessage);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -21,6 +21,21 @@ export const getMessages = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Obtener todos los mensajes de un usuario
+export const getUserMessages = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const messages = await Messages.findAll({
+      where: { user_id },
+      include: [{ model: Chat }]
+    });
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 // Obtener un mensaje por ID
 export const getMessageById = async (req, res) => {
@@ -38,10 +53,10 @@ export const getMessageById = async (req, res) => {
 // Eliminar un mensaje
 export const deleteMessage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params;content
     const message = await Messages.findByPk(id);
     if (!message) {
-      return res.status(404).json({ message: 'Message not found' });
+      return res.status(404).json({ message: 'Mensaje no encontrado' });
     }
     await message.destroy();
     res.status(204).send();

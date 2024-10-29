@@ -15,6 +15,21 @@ import messageRoutes from './src/routes/messageRoutes.js';
 import chatParticipantsRoutes from './src/routes/chatParticipantsRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 
+
+import './src/models/chat.js';
+import './src/models/chatParticipants.js';
+import './src/models/messages.js';
+import './src/models/user.js';
+import setupAssociations from './src/models/associations.js';
+// Sincronizar con la base de datos
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Base de datos sincronizada");
+}).catch(error => {
+  console.error("Error al sincronizar la base de datos:", error);
+});
+
+setupAssociations();
+
 const app = express();
 const port = 3000;
 

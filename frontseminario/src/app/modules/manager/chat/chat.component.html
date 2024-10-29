@@ -1,43 +1,50 @@
 <div class="flex h-screen bg-gray-100 p-4">
-    <!-- Panel lateral con lista de usuarios -->
-    <div class="w-1/4 bg-white rounded-l-lg shadow-md p-4 overflow-auto">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Chats</h2>
-      <ul>
-        <li *ngFor="let user of users" class="p-2 rounded-lg hover:bg-blue-100 cursor-pointer text-gray-700 mb-2">
-          {{ user }}
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Chat principal -->
-    <div class="w-3/4 flex flex-col bg-white rounded-r-lg shadow-md overflow-hidden">
-      <!-- Área de mensajes -->
-      <div class="flex-1 p-6 overflow-auto space-y-4">
-        <div *ngFor="let msg of messages" class="flex items-end" [ngClass]="{'justify-end': msg.sender === 'Yo', 'justify-start': msg.sender !== 'Yo'}">
-          <div class="max-w-xs rounded-lg p-3 text-sm shadow-lg"
-            [ngClass]="{'bg-blue-500 text-white': msg.sender === 'Yo', 'bg-gray-300 text-gray-800': msg.sender !== 'Yo'}">
-            <p class="text-xs font-semibold mb-1" *ngIf="msg.sender !== 'Yo'">{{ msg.sender }}</p>
-            <p>{{ msg.content }}</p>
-          </div>
+  <!-- Panel lateral con lista de usuarios -->
+  <div class="w-1/4 bg-white rounded-l-lg shadow-md p-4 overflow-auto">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Chats</h2>
+    <h3 class="text-sm font-semibold text-gray-600 mb-2">
+      Usuario logueado: {{ userId }} - {{ userName }}
+    </h3>
+    <ul>
+      <li *ngFor="let user of filteredUsers" 
+          (click)="selectUser(user)" 
+          class="p-2 rounded-lg hover:bg-blue-100 cursor-pointer text-gray-700 mb-2">
+        {{ user.name }} (ID: {{ user.id }})
+      </li>
+    </ul>
+  </div>
+
+  <!-- Chat principal -->
+  <div class="w-3/4 flex flex-col bg-white rounded-r-lg shadow-md overflow-hidden">
+    <!-- Área de mensajes -->
+    <div class="flex-1 p-6 overflow-auto space-y-4">
+      <div *ngFor="let msg of messages; let i = index" 
+           class="flex items-end" 
+           [ngClass]="{'justify-end': i % 2 === 1, 'justify-start': i % 2 === 0}">
+        <div class="max-w-xs rounded-lg p-3 text-sm shadow-lg"
+             [ngClass]="{'bg-blue-500 text-white': i % 2 === 1, 'bg-gray-300 text-gray-800': i % 2 === 0}">
+          <p class="text-xs font-semibold mb-1" *ngIf="msg.sender !== 'Yo'">{{ msg.sender }}</p>
+          <p>{{ msg.message }}</p>
         </div>
       </div>
-  
-      <!-- Entrada de mensaje -->
-      <div class="p-4 border-t border-gray-200">
-        <form (submit)="sendMessage()">
-          <div class="flex items-center">
-            <input
-              [(ngModel)]="newMessage"
-              name="message"
-              type="text"
-              placeholder="Escribe un mensaje..."
-              class="flex-1 bg-gray-100 p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-            />
-            <button type="submit" class="ml-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2 shadow-md">
-              Enviar
-            </button>
-          </div>
-        </form>
-      </div>
+    </div>
+
+    <!-- Entrada de mensaje -->
+    <div class="p-4 border-t border-gray-200">
+      <form (submit)="sendMessage()">
+        <div class="flex items-center">
+          <input
+            [(ngModel)]="newMessage"
+            name="message"
+            type="text"
+            placeholder="Escribe un mensaje..."
+            class="flex-1 bg-gray-100 p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+          />
+          <button type="submit" class="ml-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2 shadow-md">
+            Enviar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
