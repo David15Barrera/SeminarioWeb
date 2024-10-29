@@ -39,5 +39,22 @@
     <button (click)="checkout()" class="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition duration-200">
       Proceder al Pago
     </button>
+   </div>
+</div>
+
+<!-- Modal de Pago -->
+<div *ngIf="isCheckoutModalVisible" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+    <h2 class="text-2xl font-semibold mb-4">Confirmación de Pago</h2>
+    <p class="mb-4">Total: Q{{ calculateTotal() }}</p>
+    <label class="block mb-2">Selecciona un método de pago:</label>
+    <select [(ngModel)]="selectedPaymentMethod" class="w-full p-2 border rounded">
+      <option value="PAYPAL">PayPal (+10 Tax)</option>
+      <option value="PAYMENT_GATEWAY">Payment Gateway (+5 Tax)</option>
+    </select>
+    <div class="flex justify-between mt-6">
+      <button (click)="confirmPayment()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Pagar</button>
+      <button (click)="cancelCheckout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancelar</button>
+    </div>
   </div>
 </div>

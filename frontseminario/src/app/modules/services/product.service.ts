@@ -53,6 +53,9 @@ export class ProductService {
   updateProduct(id: number, product: Product): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/update/${id}`, product);
   }
+  updateProductt(id: number, product: Partial<Product>): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/update/${id}`, product);
+  }
 
   // Eliminar un producto
   deleteProduct(id: number): Observable<void> {

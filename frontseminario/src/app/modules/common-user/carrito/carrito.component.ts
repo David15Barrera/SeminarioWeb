@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
-import { CartItemSimple } from '../../interfaces/cart.model';
+import { Cart, CartItemSimple } from '../../interfaces/cart.model';
+import { ProductService } from '../../services/product.service';
+
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-carrito',
@@ -14,8 +16,12 @@ import Swal from 'sweetalert2';
 export class CarritoComponent implements OnInit {
   cartItems: CartItemSimple[] = [];
   userId: number | null = null; // ID del usuario
+  isPaymentModalOpen = false; // Estado del modal
+  selectedPaymentMethod: 'PAYPAL' | 'PAYMENT_GATEWAY' = 'PAYPAL';
+  isCheckoutModalVisible: boolean = false;
 
-  constructor(private cartService: CartService) {}
+
+  constructor(private cartService: CartService, private productService: ProductService) {}
 
   ngOnInit(): void {
     this.loadUserId(); 
@@ -119,7 +125,94 @@ export class CarritoComponent implements OnInit {
     this.cartService.updateCartItemDetails(item.id, updatedDetails).subscribe();
   }
 
-  checkout() {
-    alert('Procediendo al pago...');
+
+
+  calculateTax(): number {
+    return this.selectedPaymentMethod === 'PAYPAL' ? 10 : 5;
   }
+
+  openPaymentModal() {
+    this.isPaymentModalOpen = true;
+  }
+
+  closePaymentModal() {
+    this.isPaymentModalOpen = false;
+  }
+
+  // Método para mostrar el modal
+  checkout() {
+    this.isCheckoutModalVisible = true;
+  }
+
+  // Método para cancelar el proceso de pago y cerrar el modal
+  cancelCheckout() {
+    this.isCheckoutModalVisible = false;
+  }
+
+  // Método para confirmar el pago
+  confirmPayment() {
+    const tax = this.selectedPaymentMethod === 'PAYPAL' ? 10 : 5;
+    const totalAmount = this.calculateTotal() + tax;
+  
+    if (this.userId !== null) {
+      this.cartService.getPendingCart(this.userId).subscribe(cart => {
+        if (cart) {
+          const updatedCart: Cart = {
+            id: cart.id,
+            total: totalAmount,
+            tax: tax,
+            payment_method: this.selectedPaymentMethod,
+            status: 'COMPLETED',
+            discount_payment_method: cart.discount_payment_method,
+            user_id: cart.user_id
+          };
+  
+          // Actualizar el carrito y confirmar el pago
+          this.cartService.updateCart(updatedCart.id, updatedCart).subscribe(
+            () => {
+              Swal.fire('Pago Exitoso', 'El pago se ha completado correctamente', 'success');
+              this.isCheckoutModalVisible = false;
+  
+              // Obtener la cantidad disponible y actualizar cada producto en el carrito
+              this.cartItems.forEach(item => {
+                this.productService.getProductById(item.product_id).subscribe(product => {
+                  const updatedQuantity = product.available_quantity - item.quantity;
+  
+                  // Asegúrate de que la cantidad no sea negativa
+                  if (updatedQuantity >= 0) {
+                    this.productService.updateProduct(item.product_id, {
+                      ...product, // Mantener los otros campos del producto
+                      available_quantity: updatedQuantity // Actualizar solo la cantidad disponible
+                    }).subscribe(() => {
+                      console.log(`Cantidad actualizada para el producto ID ${item.product_id}`);
+                    });
+                  } else {
+                    Swal.fire({
+                      title: 'Error',
+                      text: 'No hay suficiente cantidad disponible para el producto: ' + product.name,
+                      icon: 'error',
+                      confirmButtonText: 'Entendido'
+                    });
+                  }
+                });
+              });
+            },
+            (error) => {
+              const errorDescription = `Error en el método de pago: ${error.message}`;
+              this.cartService.updateCart(cart.id, {
+                ...updatedCart,
+                status: 'CANCELLED_ERROR',
+                description_error: errorDescription
+              }).subscribe(() => {
+                Swal.fire('Pago Fallido', errorDescription, 'error');
+                this.isCheckoutModalVisible = false;
+              });
+            }
+          );
+        }
+      });
+    }
+  }
+  
+
 }
