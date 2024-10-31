@@ -16,7 +16,7 @@ const Cart = sequelize.define('Cart', {
     allowNull: false,
   },
   payment_method: {
-    type: DataTypes.ENUM("PAYPAL", "PAYMENT_GATEWAY"),
+    type: DataTypes.ENUM("PAYPAL", "PAYMENT_GATEWAY", "CHILTEPAGO"),
     allowNull: false,
   },
   status: {

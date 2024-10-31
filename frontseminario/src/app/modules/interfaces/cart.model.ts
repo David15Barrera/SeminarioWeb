@@ -4,7 +4,7 @@ export interface Cart {
     id: number;
     total: number;
     tax: number;
-    payment_method: 'PAYPAL' | 'PAYMENT_GATEWAY';
+    payment_method: 'PAYPAL' | 'PAYMENT_GATEWAY' | 'CHILTEPAGO';
     status: 'COMPLETED' | 'CANCELLED_ERROR' | 'PENDING';
     description_error?: string;
     user_id: number;

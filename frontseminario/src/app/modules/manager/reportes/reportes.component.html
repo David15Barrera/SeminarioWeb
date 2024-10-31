@@ -1,7 +1,9 @@
+
 <!-- src/app/reportes/reportes.component.html -->
+<h2 class="text-2xl font-semibold mb-4 text-gray-800 text-center">Reporte de Productos por Rango de Fechas</h2>
+
 <div class="p-4 bg-gray-50 min-h-screen">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Reporte de Productos por Rango de Fechas</h2>
-  
+ 
     <!-- Reporte: Existencias por rango de fechas -->
     <div class="mb-6 bg-white p-4 rounded-lg shadow-md">
       <h3 class="font-semibold mb-2 text-lg text-gray-700">Reporte de Existencias entre fechas</h3>
@@ -32,7 +34,7 @@
 
     <div class="p-6 bg-gray-50 rounded-lg shadow-md">      
         <div *ngIf="allProducts.length > 0">
-          <h3 class="text-xl font-semibold text-gray-700 mb-4">Productos Vendidos</h3>
+          <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Productos Vendidos</h1>
           <ul class="space-y-4">
             <li *ngFor="let product of allProducts" class="flex justify-between items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
               <div>
@@ -53,7 +55,7 @@
   
 
   <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold text-gray-800 mb-4">Productos por Encima del Promedio</h3>
+    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Productos por Encima del Promedio</h3>
   
     <div *ngIf="aboveAverageProducts.length > 0">
       <ul class="space-y-4">
@@ -72,7 +74,7 @@
   </div>
   
   <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold text-gray-800 mb-4">Reporte de Usuarios Inscritos</h3>
+    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Reporte de Usuarios Inscritos</h3>
   
     <div *ngIf="filteredUsers.length > 0">
       <ul class="space-y-4">
@@ -93,7 +95,7 @@
   
 
   <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Reporte Total de Ventas en Q</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Reporte Total de Ventas en Q</h2>
     
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow">
       <thead class="bg-gray-100">
@@ -117,7 +119,7 @@
   
 
   <div class="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Carritos Cancelados por Error</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Carritos Cancelados por Error</h2>
     
     <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
       <thead class="bg-gray-100">
@@ -144,7 +146,7 @@
   
 
   <div class="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Reporte de Empleados por Departamento</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Reporte de Empleados por Departamento</h2>
     
     <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
       <thead class="bg-gray-100">

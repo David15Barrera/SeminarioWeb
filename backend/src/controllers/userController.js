@@ -3,12 +3,23 @@ import bcrypt from 'bcrypt';
 // Crear un nuevo usuario
 export const createUser = async (req, res) => {
   try {
-    const user = await User.create(req.body);
-    res.status(201).json(user);
+    // Obtén la contraseña del cuerpo de la solicitud
+    const { password, ...userData } = req.body;
+
+    // Genera un salt y cifra la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Crea un nuevo usuario con la contraseña cifrada
+    const user = await User.create({ ...userData, password: hashedPassword });
+    
+    // Devuelve el usuario creado sin la contraseña
+    res.status(201).json({ ...user.toJSON(), password: undefined });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Obtener todos los usuarios
 export const getUsers = async (req, res) => {

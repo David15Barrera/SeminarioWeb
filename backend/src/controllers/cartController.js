@@ -5,6 +5,9 @@ import CartItem from '../models/cartItem.js';
 import Product from '../models/product.js';
 import Supplier from '../models/supplier.js';
 import { Op } from 'sequelize';
+import axios from 'axios'; 
+import dotenv from 'dotenv';
+dotenv.config();
 // Crear un nuevo carrito
 export const createCart = async (req, res) => {
   try {
@@ -282,5 +285,88 @@ export const getAboveAverageSalesProducts = async (req, res) => {
     res.status(200).json(report);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+//////////////////
+
+
+export const updatePay = async (req, res) => {
+  const { id } = req.params;
+  const { total, tax, payment_method, userEmail } = req.body;
+
+  try {
+    const cart = await Cart.findByPk(id);
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado' });
+    }
+
+    if (payment_method === 'CHILTEPAGO') {
+      // Paso 1: Obtén el token de autenticación
+      const authResponse = await axios.post(`${process.env.CHILTEPAGO_AUTH_URL}`, {
+        code: process.env.CHILTEPAGO_CODE,
+        secretKey: process.env.CHILTEPAGO_SECRET_KEY
+      });
+
+      // Verifica el código de estado de la respuesta de autenticación
+      if (authResponse.status !== 200) {
+        return res.status(500).json({ message: 'Error al obtener el token de autenticación.' });
+      }
+
+      const token = authResponse.data.token;
+
+      // Paso 2: Realiza la consulta de pago
+      const paymentResponse = await axios.post(`${process.env.CHILTEPAGO_PAY_URL}`, {
+        userEmail,
+        amount: total.toString(),
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      console.log(paymentResponse.data); 
+
+      // Verifica el código de estado de la respuesta de pago
+      if (paymentResponse.status === 200) {
+      // Maneja la respuesta del pago
+        // Simplificación: solo verifica el mensaje de éxito
+        if (paymentResponse.data.message === 'Payment processed successfully') {
+          // Pago autorizado: actualiza el carrito con estado COMPLETED
+          await cart.update({
+            total: total, // Actualiza con el total que recibiste en la solicitud
+            tax: tax,     // Actualiza con el tax que recibiste en la solicitud
+            payment_method,
+            status: 'COMPLETED',
+            description_error: null // Limpiamos cualquier error previo
+          });
+          return res.status(200).json(cart);
+        } else {
+          // Pago no autorizado: actualiza el carrito con estado CANCELLED_ERROR
+          await cart.update({
+            status: 'CANCELLED_ERROR',
+            description_error: 'Pago no autorizado por CHILTEPAGO'
+          });
+        }
+      } else {
+        // Si no fue un estado 200, trata como error
+        await cart.update({
+          status: 'CANCELLED_ERROR',
+          description_error: 'Error en la respuesta de pago'
+        });
+      }
+    } else {
+      // Si el método de pago no es CHILTEPAGO, actualiza solo el carrito normalmente
+      await cart.update({ total, tax, payment_method, status: 'COMPLETED' });
+    }
+
+    res.status(200).json(cart);
+  } catch (error) {
+    // Manejo de errores
+    const errorMsg = error.response?.data?.message || error.message;
+    await Cart.update({
+      status: 'CANCELLED_ERROR',
+      description_error: errorMsg,
+    });
+    res.status(500).json({ message: errorMsg });
   }
 };

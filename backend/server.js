@@ -14,7 +14,7 @@ import chatRoutes from './src/routes/chatRoutes.js';
 import messageRoutes from './src/routes/messageRoutes.js';
 import chatParticipantsRoutes from './src/routes/chatParticipantsRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
-
+import storeRoutes from './src/routes/storeRoutes.js';
 
 import './src/models/chat.js';
 import './src/models/chatParticipants.js';
@@ -52,6 +52,7 @@ app.use('/api/cart-item', cartItemRoutes)
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/chat-participants', chatParticipantsRoutes);
+app.use('/api/store', storeRoutes);
 
 // Iniciar el servidor y conectar a la base de datos
 sequelize.sync()

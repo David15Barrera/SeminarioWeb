@@ -12,3 +12,11 @@
     background-color: #2563eb;
   }
   
+  .chat-area {
+    max-height: 60vh; /* Limita la altura del área de chat */
+    overflow-y: auto; /* Agrega desplazamiento vertical */
+  }
+  
+  .post-area {
+    max-height: calc(100vh - 300px); /* Ajusta según la altura de la parte superior */
+  }

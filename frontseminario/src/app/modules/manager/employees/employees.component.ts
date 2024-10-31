@@ -21,8 +21,20 @@ interface Employee {
 export class EmployeesComponent implements OnInit {
   employees: Employee[] = [];
   isModalOpen = false;
+  isCreateModalOpen = false; // Nuevo estado para el modal de creación
   selectedEmployee: Employee | null = null;
   selectedRoleId: number = 0;
+
+  newEmployee: User = {
+    id: 0,
+    name: '',
+    email: '',
+    address: '',
+    nit: '',
+    password: '',
+    role_id: 3, // Rol por defecto (Empleado)
+    payment_method: 'PAYPAL'
+  };
 
   roleNames: { [key: number]: string } = {
     1: 'Administrador',
@@ -57,6 +69,45 @@ export class EmployeesComponent implements OnInit {
   closeEditModal() {
     this.isModalOpen = false;
     this.selectedEmployee = null;
+  }
+
+  openCreateModal() {
+    this.newEmployee = {
+      id: 0,
+      name: '',
+      email: '',
+      address: '',
+      nit: '',
+      password: '',
+      role_id: 3,
+      payment_method: 'PAYPAL'
+    };
+    this.isCreateModalOpen = true;
+  }
+
+  closeCreateModal() {
+    this.isCreateModalOpen = false;
+    this.newEmployee = {
+      id: 0,
+      name: '',
+      email: '',
+      address: '',
+      nit: '',
+      password: '',
+      role_id: 3,
+      payment_method: 'PAYPAL'
+    };
+  }
+
+  createEmployee() {
+    this.userService.createUser(this.newEmployee).subscribe(
+      (data) => {
+        Swal.fire('Éxito', `Empleado ${data.name} creado exitosamente`, 'success');
+        this.loadEmployees();
+        this.closeCreateModal();
+      },
+      (error) => Swal.fire('Error', 'Error al crear el empleado', 'error')
+    );
   }
 
   updateRole() {

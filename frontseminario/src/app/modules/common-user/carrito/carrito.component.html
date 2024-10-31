@@ -51,6 +51,7 @@
     <select [(ngModel)]="selectedPaymentMethod" (change)="paypalForm = {}" class="w-full p-2 border rounded">
       <option value="PAYPAL">PayPal (+10 Tax)</option>
       <option value="PAYMENT_GATEWAY">Payment Gateway (+5 Tax)</option>
+      <option value="CHILTEPAGO">CHILTEPAGO (+5 )</option>
     </select>
     
     <div *ngIf="selectedPaymentMethod === 'PAYPAL'" class="mt-4">

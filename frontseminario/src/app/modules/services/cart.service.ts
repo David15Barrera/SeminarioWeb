@@ -148,7 +148,15 @@ private createOrUpdateCartItem(cartId: number, product: any, quantity: number): 
     return this.http.get<Cart[]>(`${this.apiUrl}/all`).pipe(
         map((carts: Cart[]) =>
             carts.filter(cart => cart.user_id === userId && cart.status === status)
-        )
-    );
+            )
+        );
+    }
+
+    processPayment(cartId: number, paymentData: { total: number, tax: number, payment_method: string, userEmail: string }): Observable<Cart> {
+        return this.http.put<Cart>(`${this.apiUrl}/updatePay/${cartId}`, paymentData);
+    }
+
 }
-}
+
+
+

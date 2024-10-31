@@ -3,11 +3,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 interface LoginResponse {
-  token?: string; // si manejas el token
-  id: number; // id del usuario
-  name: string; // nombre del usuario
-  email: string; // email del usuario
-  role: string; // rol del usuario
+  token?: string;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
 }
 
 
@@ -31,6 +31,7 @@ export class AuthService {
 
   register(userData: { name: string; email: string; address: string; nit: string; password: string; payment_method: string; }): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
-  }
+  } 
 
+  
 }

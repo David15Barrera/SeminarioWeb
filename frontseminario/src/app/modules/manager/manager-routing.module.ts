@@ -9,6 +9,7 @@ import { ReportesComponent } from './reportes/reportes.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SupplearComponent } from './supplear/supplear.component';
 import { CreatProdComponent } from './creat-prod/creat-prod.component';
+import { StoreComponent } from './store/store.component';
 import path from 'path';
 
 const routes: Routes = [
@@ -34,6 +35,9 @@ const routes: Routes = [
   },
   {
     path:'proveedores', component: SupplearComponent
+  },
+  {
+    path:'Store', component: StoreComponent
   }
 
 ];

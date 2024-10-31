@@ -1,45 +1,112 @@
 <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lista de Empleados</h2>
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lista de Empleados</h2>
   
-    <table class="min-w-full border-collapse border border-gray-200">
+  <!-- Botón para crear empleado -->
+  <button (click)="openCreateModal()" class="bg-green-500 text-white py-2 px-4 rounded-lg mb-4">Crear Empleado</button>
+
+  <table class="min-w-full border-collapse border border-gray-200">
       <thead>
-        <tr class="bg-gray-100">
-          <th class="border border-gray-200 px-4 py-2 text-left">Nombre</th>
-          <th class="border border-gray-200 px-4 py-2 text-left">Email</th>
-          <th class="border border-gray-200 px-4 py-2 text-left">Rol</th>
-          <th class="border border-gray-200 px-4 py-2 text-left">Acciones</th>
-        </tr>
+          <tr class="bg-gray-100">
+              <th class="border border-gray-200 px-4 py-2 text-left">Nombre</th>
+              <th class="border border-gray-200 px-4 py-2 text-left">Email</th>
+              <th class="border border-gray-200 px-4 py-2 text-left">Rol</th>
+              <th class="border border-gray-200 px-4 py-2 text-left">Acciones</th>
+          </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let employee of employees" class="border-b">
-          <td class="border border-gray-200 px-4 py-2">{{ employee.name }}</td>
-          <td class="border border-gray-200 px-4 py-2">{{ employee.email }}</td>
-          <td class="border border-gray-200 px-4 py-2">{{ roleNames[employee.role_id] }}</td>
-          <td class="border border-gray-200 px-4 py-2">
-            <button (click)="openEditModal(employee)" class="text-blue-500 hover:underline">Editar</button>
-            <button (click)="deleteEmployee(employee.id, employee.name)" class="text-red-500 hover:underline ml-2">Eliminar</button>
-          </td>
-        </tr>
+          <tr *ngFor="let employee of employees" class="border-b">
+              <td class="border border-gray-200 px-4 py-2">{{ employee.name }}</td>
+              <td class="border border-gray-200 px-4 py-2">{{ employee.email }}</td>
+              <td class="border border-gray-200 px-4 py-2">{{ roleNames[employee.role_id] }}</td>
+              <td class="border border-gray-200 px-4 py-2">
+                  <button (click)="openEditModal(employee)" class="text-blue-500 hover:underline">Editar</button>
+                  <button (click)="deleteEmployee(employee.id, employee.name)" class="text-red-500 hover:underline ml-2">Eliminar</button>
+              </td>
+          </tr>
       </tbody>
-    </table>
-  
-    <!-- Modal -->
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" *ngIf="isModalOpen">
-      <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white rounded-lg p-6 w-96">
-          <h3 class="text-lg font-semibold mb-4">Editar Rol de {{ selectedEmployee?.name }}</h3>
-          <select [(ngModel)]="selectedRoleId" class="border border-gray-300 rounded-lg w-full mb-4">
-            <option [value]="1">Administrador</option>
-            <option [value]="2">Cliente</option>
-            <option [value]="3">Empleado</option>
-          </select>
-                    
-          <div class="flex justify-end">
-            <button (click)="updateRole()" class="bg-blue-500 text-white py-2 px-4 rounded-lg mr-2">Actualizar</button>
-            <button (click)="closeEditModal()" class="bg-red-500 text-white py-2 px-4 rounded-lg">Cancelar</button>
-          </div>
+  </table>
+
+  <!-- Modal para crear empleado -->
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" *ngIf="isCreateModalOpen">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-96">
+            <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Crear Empleado</h3>
+            <form>
+                <div class="mb-4">
+                    <input 
+                        [(ngModel)]="newEmployee.name" 
+                        placeholder="Nombre" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                        required>
+                </div>
+                <div class="mb-4">
+                    <input 
+                        [(ngModel)]="newEmployee.email" 
+                        placeholder="Email" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                        required>
+                </div>
+                <div class="mb-4">
+                    <input 
+                        [(ngModel)]="newEmployee.address" 
+                        placeholder="Dirección" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                        required>
+                </div>
+                <div class="mb-4">
+                    <input 
+                        [(ngModel)]="newEmployee.nit" 
+                        placeholder="NIT" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                        required>
+                </div>
+                <div class="mb-4">
+                    <input 
+                        [(ngModel)]="newEmployee.password" 
+                        type="password" 
+                        placeholder="Contraseña" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                        required>
+                </div>
+
+                <div class="flex justify-between">
+                    <button 
+                        (click)="createEmployee()" 
+                        class="bg-green-500 text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-green-600">Crear</button>
+                    <button 
+                        (click)="closeCreateModal()" 
+                        class="bg-red-500 text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-red-600">Cancelar</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-  
+</div>
+
+
+  <!-- Modal existente para editar empleado -->
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" *ngIf="isModalOpen">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-96">
+            <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Editar Rol de {{ selectedEmployee?.name }}</h3>
+            <form>
+                <div class="mb-4">
+                    <select 
+                        [(ngModel)]="selectedRoleId" 
+                        class="border border-gray-300 rounded-lg w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option [value]="1">Administrador</option>
+                        <option [value]="2">Cliente</option>
+                        <option [value]="3">Empleado</option>
+                    </select>
+                </div>
+                <div class="flex justify-between">
+                    <button 
+                        (click)="updateRole()" 
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-blue-600">Actualizar</button>
+                    <button 
+                        (click)="closeEditModal()" 
+                        class="bg-red-500 text-white py-2 px-4 rounded-lg transition duration-200 hover:bg-red-600">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

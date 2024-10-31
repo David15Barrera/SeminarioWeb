@@ -11,7 +11,8 @@ import {
   getPendingCartItems,
   getCartItemsByCartId,
   getProductsReport,
-  getAboveAverageSalesProducts
+  getAboveAverageSalesProducts,
+  updatePay
 } from '../controllers/cartController.js';
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.post('/create', createCart);
 router.get('/all', getCarts);
 router.get('/:id', getCartById);
 router.put('/update/:id', updateCart);
+router.put('/updatePay/:id', updatePay);
 router.delete('/delete/:id', deleteCart);
 
 // Rutas específicas para carritos PENDING

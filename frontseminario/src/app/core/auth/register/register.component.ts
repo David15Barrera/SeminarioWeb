@@ -31,35 +31,30 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       const userData = this.registerForm.value;
-
-      // Asegúrate de que la contraseña coincida
+  
       if (userData.password === userData.confirmPassword) {
-        this.authService.register(userData).subscribe(response => {
-          console.log('Registro exitoso', response);
-          
-          // Muestra SweetAlert de éxito
-          Swal.fire({
-            title: 'Registro exitoso',
-            text: 'Te has registrado correctamente',
-            icon: 'success',
-            confirmButtonText: 'Continuar'
-          }).then(() => {
-            // Redirige al usuario a la ruta /session/login
-            this.router.navigate(['/session/login']);
-          });
-
-        }, error => {
-          console.error('Error en el registro', error);
-          // Muestra SweetAlert de error
-          Swal.fire({
-            title: 'Error',
-            text: 'No se pudo completar el registro. Intenta de nuevo.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-          });
-        });
+        this.authService.register(userData).subscribe(
+          response => {
+            Swal.fire({
+              title: 'Registro exitoso',
+              text: 'Te has registrado correctamente',
+              icon: 'success',
+              confirmButtonText: 'Continuar'
+            }).then(() => {
+              this.router.navigate(['/session/login']);
+            });
+          },
+          error => {
+            const errorMessage = 'No se encontro el correo en portal de pagos. Intenta de nuevo.';
+            Swal.fire({
+              title: 'Error',
+              text: errorMessage,
+              icon: 'error',
+              confirmButtonText: 'Aceptar'
+            });
+          }
+        );
       } else {
-        // Muestra SweetAlert si las contraseñas no coinciden
         Swal.fire({
           title: 'Error',
           text: 'Las contraseñas no coinciden.',
@@ -68,7 +63,6 @@ export class RegisterComponent {
         });
       }
     } else {
-      // Muestra SweetAlert si el formulario es inválido
       Swal.fire({
         title: 'Error',
         text: 'Por favor, completa todos los campos requeridos.',
@@ -77,4 +71,5 @@ export class RegisterComponent {
       });
     }
   }
+  
 }

@@ -32,7 +32,7 @@ export class LoginComponent {
                 } else if (userRole === 'Cliente') {
                     this.router.navigate(['/user/configuracion']);
                 } else if (userRole === 'Empleado') {
-                    this.router.navigate(['/empleado/configuracion']);
+                    this.router.navigate(['/manager/configuracion']);
                 } else {
                     // Manejar caso de rol desconocido
                     console.error('Rol de usuario desconocido:', userRole);

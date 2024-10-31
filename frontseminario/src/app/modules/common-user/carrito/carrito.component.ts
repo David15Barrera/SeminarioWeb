@@ -16,10 +16,12 @@ import Swal from 'sweetalert2';
 export class CarritoComponent implements OnInit {
   cartItems: CartItemSimple[] = [];
   userId: number | null = null; // ID del usuario
+  emailId: string | null = null; // ID del usuario
   isPaymentModalOpen = false; // Estado del modal
   selectedPaymentMethod: 'PAYPAL' | 'PAYMENT_GATEWAY' = 'PAYPAL';
   isCheckoutModalVisible: boolean = false;
   totalAmount: number = 0; // Nueva propiedad para el total
+  userEmail: string = ''; // Correo del usuario
   paypalForm: any = { // Agregar formulario para PayPal
     email: '',
     transactionId: '',
@@ -38,6 +40,7 @@ export class CarritoComponent implements OnInit {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       if (storedUser && storedUser.id) {
         this.userId = storedUser.id;
+        this.emailId = storedUser.email;
       } else {
         console.error('No se encontró el usuario en el localStorage');
       }
@@ -47,6 +50,7 @@ export class CarritoComponent implements OnInit {
   }
 
   loadCartItems(): void {
+    console.log(this.emailId);
     if (this.userId !== null) {
     this.cartService.getPendingCartItems(this.userId).subscribe(items => {
         this.cartItems = items.map(item => ({
@@ -160,40 +164,29 @@ export class CarritoComponent implements OnInit {
 
   // Método para confirmar el pago
   confirmPayment() {
-    const tax = this.selectedPaymentMethod === 'PAYPAL' ? 10 : 5;
-    const totalAmount = this.calculateTotal() + tax;
-
+    const tax = this.calculateTax();
+    const totalAmount = this.calculateTotal2() + tax;
+  
     if (this.userId !== null) {
       this.cartService.getPendingCart(this.userId).subscribe(cart => {
         if (cart) {
-          const updatedCart: Cart = {
-            id: cart.id,
+          const paymentData = {
             total: totalAmount,
             tax: tax,
             payment_method: this.selectedPaymentMethod,
-            status: 'COMPLETED',
-            discount_payment_method: cart.discount_payment_method,
-            user_id: cart.user_id
+            userEmail: this.emailId ?? ''// Reemplaza con el email del usuario
           };
-
-          // Actualizar el carrito y confirmar el pago
-          this.cartService.updateCart(updatedCart.id, updatedCart).subscribe(
+  
+          // Procesa el pago y actualiza el carrito
+          this.cartService.processPayment(cart.id, paymentData).subscribe(
             () => {
-              // Aquí manejar el pago con PayPal
-              if (this.selectedPaymentMethod === 'PAYPAL') {
-                // Aquí podrías incluir la lógica de pago con PayPal
-                // Por ejemplo, supongamos que tienes un servicio para procesar el pago
-                // Simulando el pago exitoso
-                this.paypalForm.transactionId = 'PAYPAL_TRANSACTION_ID'; // Simulando un ID de transacción
-                Swal.fire('Pago Exitoso', 'El pago se ha completado correctamente', 'success');
-              }
-
-              this.isCheckoutModalVisible = false;
-
+              Swal.fire('Pago Exitoso', 'El pago se ha completado correctamente', 'success');
+              
+              // Descuento de productos después del pago exitoso
               this.cartItems.forEach(item => {
                 this.productService.getProductById(item.product_id).subscribe(product => {
                   const updatedQuantity = product.available_quantity - item.quantity;
-
+  
                   if (updatedQuantity >= 0) {
                     this.productService.updateProduct(item.product_id, {
                       ...product,
@@ -211,23 +204,22 @@ export class CarritoComponent implements OnInit {
                   }
                 });
               });
+  
+              // Limpiar el carrito tras el pago
+              this.cartItems = [];
+              this.isCheckoutModalVisible = false;
             },
-            (error) => {
-              const errorDescription = `Error en el método de pago: ${error.message}`;
-              this.cartService.updateCart(cart.id, {
-                ...updatedCart,
-                status: 'CANCELLED_ERROR',
-                description_error: errorDescription
-              }).subscribe(() => {
-                Swal.fire('Pago Fallido', errorDescription, 'error');
-                this.isCheckoutModalVisible = false;
-              });
+            error => {
+              Swal.fire('Error', 'Hubo un problema al procesar el pago', 'error');
             }
           );
+        } else {
+          Swal.fire('Error', 'No se encontró un carrito pendiente', 'error');
         }
       });
     }
   }
+  
   
 
 }

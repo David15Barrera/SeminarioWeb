@@ -2,7 +2,10 @@ import User from '../models/user.js'
 import Role from '../models/role.js'
 import { Op } from 'sequelize'; 
 import bcrypt from 'bcrypt';
+import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -40,29 +43,31 @@ export const login = async (req, res) => {
     const { name, email, address, nit, password, payment_method } = req.body;
   
     try {
-      const existingUser = await User.findOne({
-        where: {
-          [Op.or]: [
-            { email },
-            { nit }
-          ]
-        }
+      // Validar el correo en el portal de pagos
+      const tokenResponse = await axios.post(`${process.env.PAYMENT_API_URL}/auth/company`, {
+        code: process.env.PAYMENT_API_CODE,
+        secretKey: process.env.PAYMENT_API_SECRET_KEY
+      });
+      const token = tokenResponse.data.token;
+  
+      // Validar si el email existe en el portal de pagos
+      const emailResponse = await axios.get(`${process.env.PAYMENT_API_URL}/user-email/${email}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
   
-      if (existingUser) {
-        return res.status(409).json({ message: 'Email or NIT already exists' });
+      if (!emailResponse.data.exists) {
+        return res.status(400).json({ message: 'El correo no está registrado en el portal de pagos.' });
       }
   
-      // Hashear la contraseña
+      // Continuar con el registro si el correo es válido
       const hashedPassword = await bcrypt.hash(password, 10);
-  
-       const newUser = await User.create({
+      const newUser = await User.create({
         name,
         email,
         address,
         nit,
         password: hashedPassword,
-        role_id: 2, // Este rerá el rol del cliente = 1
+        role_id: 2,
         payment_method,
       });
   
@@ -76,6 +81,7 @@ export const login = async (req, res) => {
         message: 'User registered successfully',
       });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.response?.data?.message || error.message });
     }
   };
+  
